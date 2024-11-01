@@ -1,0 +1,12 @@
+Dokan_method,price,SKU
+PostNL + Track & Trace,4.95,SHIP-NL-LETTER
+PostNL + Track & Trace,6.75,SHIP-NL-PK-0-10KG-T
+EU zone 1 - tracked,15.00,SHIP-EUR-0-2KG-T
+EU zone 1 - tracked,9.00,SHIP-EUR-LETTER-T
+EU Zone 2 - tracked,9.00,SHIP-EUR-LETTER-T
+EU Zone 2 - tracked,15.00,SHIP-EUR-0-2KG-T
+Non EU - tracked,9.00,SHIP-EUR-LETTER-T
+Non EU - tracked,18.50,SHIP-EUR-0-2KG-T
+World - untracked (postal),12.50,SHIP-ROW-LETTER
+World - tracked (postal),19.95,SHIP-ROW-0-2KG-T
+World - tracked (postal),24.95,SHIP-ROW-0-2KG-P
