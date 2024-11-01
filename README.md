@@ -160,11 +160,6 @@ The script uses Python's logging module to provide informative messages about it
 - **ERROR** level logs for any issues or exceptions.
 - Logs include information about each API request, response, and errors for easier debugging.
 
-## Future Improvements
-
-- **Asynchronous API Requests**: Consider implementing `aiohttp` to make API calls asynchronously, which would further improve the performance for large batches of orders.
-- **Error Handling Enhancements**: Introduce more granular error handling for specific types of issues, such as network errors or rate-limiting responses.
-- **User Notifications**: Add email notifications or Slack integration to alert users about the script's status, especially in case of errors.
 
 ## Conclusion
 
