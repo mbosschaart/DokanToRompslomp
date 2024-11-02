@@ -529,10 +529,11 @@ class InvoiceProcessor:
 
     This will improve readability and make the code easier to test and debug.
     """
-    def __init__(self, dokan_api, rompslomp_api, vat_handler):
+    def __init__(self, dokan_api, rompslomp_api, vat_handler, data_loader):
         self.dokan_api = dokan_api
         self.rompslomp_api = rompslomp_api
         self.vat_handler = vat_handler
+        self.data_loader = data_loader  # Store the data_loader as an instance variable
         self.success_count = 0
         self.failure_count = 0
         self.failed_orders = []
@@ -586,6 +587,8 @@ class InvoiceProcessor:
 
             # Prepare invoice lines
             lines = []
+
+            # Add product lines
             for item in order['line_items']:
                 sku = item.get('sku')
                 product_id, product_description, price_per_unit, price_with_vat, vat_rate, vat_type_id, account_id, account_path = self.rompslomp_api.get_product_id_by_sku(sku)
@@ -600,7 +603,7 @@ class InvoiceProcessor:
                 vat_type_id, vat_rate, price_per_unit = self.vat_handler.determine_vat_for_line_item(
                     shipping_country, is_eu_country, item.get('price', 0), vat_type_id, price_per_unit
                 )
-                
+
                 lines.append({
                     "description": product_description if product_description else item['name'],
                     "quantity": item['quantity'],
@@ -611,6 +614,36 @@ class InvoiceProcessor:
                     "account_id": account_id,
                     "account_path": account_path
                 })
+
+            # Add shipping line
+            shipping_mapping_dict = self.data_loader.load_shipping_mapping()
+            for shipping_line in order.get('shipping_lines', []):
+                method_title = shipping_line.get('method_title', '')
+                total = float(shipping_line.get('total', 0))
+                matching_row = shipping_mapping_dict.get((method_title, total))
+
+                if matching_row:
+                    sku = matching_row['SKU']
+                    product_id, product_description, price_per_unit, price_with_vat, vat_rate, vat_type_id, account_id, account_path = self.rompslomp_api.get_product_id_by_sku(sku)
+                    if product_id:
+                        shipping_country = order['shipping'].get('country', 'NL')
+                        is_eu_country = shipping_country in EU_COUNTRIES
+                        vat_type_id, vat_rate, price_per_unit = self.vat_handler.determine_vat_for_line_item(
+                            shipping_country, is_eu_country, total, vat_type_id, price_per_unit
+                        )
+
+                        lines.append({
+                            "description": product_description if product_description else method_title,
+                            "quantity": 1,
+                            "price_per_unit": price_per_unit,
+                            "vat_rate": vat_rate,
+                            "vat_type_id": vat_type_id,
+                            "product_id": product_id,
+                            "account_id": account_id,
+                            "account_path": account_path
+                        })
+                    else:
+                        logging.error(f"Shipping method could not be matched, skipping shipping line for method: {method_title}")
 
             # Prepare invoice data
             invoice_date = order['date_created'].split('T')[0]  # Get the date from the Dokan order
@@ -655,7 +688,7 @@ if __name__ == "__main__":
     data_loader = DataLoader()
     vat_handler = VATHandler(data_loader)
 
-    invoice_processor = InvoiceProcessor(dokan_api, rompslomp_api, vat_handler)
+    invoice_processor = InvoiceProcessor(dokan_api, rompslomp_api, vat_handler, data_loader)
 
     if len(sys.argv) > 1:
         # If an order ID is provided, process only that order
