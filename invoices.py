@@ -228,14 +228,14 @@ class VATHandler:
             return vat_type_id, vat_rate
         return None, None
 
-    def determine_vat_for_line_item(self, shipping_country, is_eu_country, total, vat_type_id, price_per_unit):
+    def determine_vat_for_line_item(self, shipping_country, is_eu_country, total_including_vat, vat_type_id, price_per_unit):
         """
         Determines the appropriate VAT values for a line item.
 
         Args:
             shipping_country (str): The shipping country code.
             is_eu_country (bool): Whether the country is in the EU.
-            total (float): The total price from Dokan.
+            total_including_vat (float): The total price from Dokan including VAT.
             vat_type_id (int): The existing VAT type ID from Rompslomp.
             price_per_unit (float): The price per unit.
 
@@ -244,10 +244,12 @@ class VATHandler:
         """
         if is_eu_country:
             vat_type_id, vat_rate = self.get_vat_info_for_country(shipping_country)
+            # Calculate price per unit excluding VAT so that when VAT is added, the price matches total_including_vat
+            price_per_unit = round(total_including_vat / (1 + vat_rate), 2)
         else:
             vat_rate = 0.0  # Non-EU countries have 0% VAT
             vat_type_id = 681363806  # Set to 0% VAT for non-EU countries unless it's a margin product
-            price_per_unit = total  # Use the price from Dokan for non-EU orders
+            price_per_unit = total_including_vat  # Use the price from Dokan for non-EU orders
 
         return vat_type_id, vat_rate, price_per_unit
 
