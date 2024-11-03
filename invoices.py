@@ -34,9 +34,6 @@ def log_debug(message):
 
     Args:
         message (str): The message to log.
-
-    Example:
-        log_debug("This is a test debug message.")
     """
     if DEBUG:
         logging.debug(message)
@@ -51,9 +48,6 @@ def round_up_to_nearest_5_or_10_cents(amount):
 
     Returns:
         float: The rounded amount.
-
-    Example:
-        round_up_to_nearest_5_or_10_cents(4.33)  # Returns 4.35
     """
     return math.ceil(amount * 20) / 20.0
 
@@ -65,8 +59,6 @@ def handle_request_error(e, response=None):
     Args:
         e (Exception): The exception that was raised.
         response (requests.Response, optional): The response object, if available.
-
-    This function is typically used for handling network-related errors, such as connection errors or server errors.
     """
     logging.error(f"Request failed: {e}")
     if response is not None:
@@ -83,13 +75,6 @@ def validate_order_data(order):
 
     Returns:
         bool: True if the order data is valid, False otherwise.
-
-    Important Fields:
-        - 'billing': Ensures billing information is available.
-        - 'line_items': Required to create invoice line items.
-        - 'id': The order identifier.
-        - 'date_created': Used for setting invoice and due dates.
-        - 'shipping': Required to determine the destination and applicable VAT rates.
     """
     required_fields = ['billing', 'line_items', 'id', 'date_created', 'shipping']
     for field in required_fields:
@@ -111,11 +96,6 @@ def get_template_id(country_code):
 
     Returns:
         int: The template ID for the invoice.
-
-    The template IDs are used to differentiate invoice formats based on the destination country:
-        - NL: Template for orders shipped within the Netherlands.
-        - EU: Template for other EU countries.
-        - OTHER: Template for non-EU countries.
     """
     TEMPLATE_IDS = {
         "NL": 217484825,
@@ -133,21 +113,6 @@ def get_template_id(country_code):
 class ConfigManager:
     """
     Manages configuration variables for the script, such as API URLs and credentials.
-
-    Environment Variables:
-        - DOKAN_BASE_URL: Base URL for the Dokan API.
-        - DOKAN_USERNAME and DOKAN_PASSWORD: Authentication credentials for Dokan.
-        - ROMPSLOMP_COMPANY_ID: The company ID for Rompslomp.
-        - ROMPSLOMP_API_KEY: API key for accessing Rompslomp.
-        - ROMPSLOMP_BASE_URL: Base URL for Rompslomp's API.
-        - ROMPSLOMP_CONTACTS_ENDPOINT, ROMPSLOMP_PRODUCTS_ENDPOINT, ROMPSLOMP_INVOICES_ENDPOINT: Specific endpoints for different operations.
-
-    Example .env File:
-        DOKAN_BASE_URL=https://example.com/wp-json/dokan/v1
-        DOKAN_USERNAME=your_username
-        DOKAN_PASSWORD=your_password
-        ROMPSLOMP_COMPANY_ID=1234567890
-        ROMPSLOMP_API_KEY=your_api_key
     """
     def __init__(self):
         self.dokan_base_url = os.getenv("DOKAN_BASE_URL")
@@ -167,11 +132,6 @@ class ConfigManager:
 class DataLoader:
     """
     Loads and caches data from CSV files, such as VAT mapping and shipping mapping.
-
-    - 'vat_mapping.csv': Contains VAT information for different countries.
-    - 'shipping_mapping.csv': Maps shipping methods from Dokan to products in Rompslomp.
-
-    These CSV files must be present in the same directory as the script for proper functioning.
     """
     def __init__(self):
         self.vat_mapping_dict = None
@@ -203,9 +163,6 @@ class DataLoader:
 class VATHandler:
     """
     Handles VAT calculations and related logic.
-
-    The VATHandler class is responsible for ensuring that the correct VAT rates are applied based on the country of the customer.
-    This is crucial for maintaining tax compliance across different regions, especially when dealing with EU and non-EU customers.
     """
     def __init__(self, data_loader):
         self.data_loader = data_loader
@@ -257,12 +214,6 @@ class VATHandler:
 class DokanAPI:
     """
     Handles interactions with the Dokan API to fetch order data.
-
-    API Endpoints Used:
-        - 'get_last_processing_order()': Fetches all processing orders.
-        - 'get_order_by_id(order_id)': Fetches a specific order by ID.
-
-    These endpoints are used to retrieve the relevant order information necessary for creating invoices in Rompslomp.
     """
     def __init__(self, config):
         self.base_url = config.dokan_base_url
@@ -341,10 +292,6 @@ class DokanAPI:
 class RompslompAPI:
     """
     Handles interactions with the Rompslomp API, including creating contacts, fetching products, and creating invoices.
-
-    Retry Mechanism:
-        - Each API call is wrapped in a retry mechanism to handle transient errors like rate limits or server unavailability.
-        - Retries are configured with exponential backoff, ensuring requests are spaced out in case of repeated failures.
     """
     def __init__(self, config):
         self.base_url = config.rompslomp_base_url
@@ -523,19 +470,12 @@ class RompslompAPI:
 class InvoiceProcessor:
     """
     Processes invoices by interacting with Dokan and Rompslomp APIs.
-
-    To improve maintainability, consider breaking down 'create_concept_invoice()' into smaller methods such as:
-        - 'create_or_get_contact()': Handle contact creation or retrieval.
-        - 'prepare_invoice_lines()': Prepare the line items for the invoice.
-        - 'submit_invoice()': Create the invoice in Rompslomp.
-
-    This will improve readability and make the code easier to test and debug.
     """
     def __init__(self, dokan_api, rompslomp_api, vat_handler, data_loader):
         self.dokan_api = dokan_api
         self.rompslomp_api = rompslomp_api
         self.vat_handler = vat_handler
-        self.data_loader = data_loader  # Store the data_loader as an instance variable
+        self.data_loader = data_loader
         self.success_count = 0
         self.failure_count = 0
         self.failed_orders = []
@@ -602,9 +542,17 @@ class InvoiceProcessor:
 
                 shipping_country = order['shipping'].get('country', 'NL')
                 is_eu_country = shipping_country in EU_COUNTRIES
-                vat_type_id, vat_rate, price_per_unit = self.vat_handler.determine_vat_for_line_item(
-                    shipping_country, is_eu_country, item.get('price', 0), vat_type_id, price_per_unit
-                )
+
+                # Always use margin vat_type_id for Margin Products (case insensitive)
+                if "margin product" in (product_description or "").lower():
+                    vat_type_id = 688369464  # Hardcoded vat_type_id for margin products
+                    vat_rate = 0.0  # Margin products have 0% VAT
+                    price_per_unit = item.get('price', 0)  # Use the price from Dokan order line as-is for margin products
+
+                else:
+                    vat_type_id, vat_rate, price_per_unit = self.vat_handler.determine_vat_for_line_item(
+                        shipping_country, is_eu_country, item.get('price', 0), vat_type_id, price_per_unit
+                    )
 
                 lines.append({
                     "description": product_description if product_description else item['name'],
