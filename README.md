@@ -194,7 +194,7 @@ Place the original invoices.py scripts and the supporting files in the same dire
 2. **Start the Backend Server**:
    - Ensure the `backend_server.py` is running and listening on `http://localhost:1234`.
 3. **Interact with the Dokan Orders Page**:
-   - Go to the Dokan orders page (`https://retro8bitshop.com/dashboard/orders/`) and select the orders you want to process.
+   - Go to the Dokan orders page (`https://example.com/dashboard/orders/`) and select the orders you want to process.
    - Click the **"Send Selected Orders to Rompslomp"** button in the popup or the overlay button on the page.
    - The extension will send the selected orders to the backend server, which will process the invoices and create them in Rompslomp.
 
