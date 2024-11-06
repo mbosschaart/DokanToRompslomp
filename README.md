@@ -51,14 +51,14 @@ The script uses environment variables for configuration, which can be set in a `
 
 ```plaintext
 DOKAN_BASE_URL=https://example.com/wp-json/dokan/v1
-DOKAN_USERNAME=your_username
-DOKAN_PASSWORD=your_password
-ROMSLOMP_COMPANY_ID=1234567890
-ROMSLOMP_API_KEY=your_api_key
-ROMSLOMP_BASE_URL=https://api.rompslomp.nl/api/v1/companies
-ROMSLOMP_CONTACTS_ENDPOINT=/contacts
-ROMSLOMP_PRODUCTS_ENDPOINT=/products
-ROMSLOMP_INVOICES_ENDPOINT=/sales_invoices
+DOKAN_USERNAME=<your_username>
+DOKAN_PASSWORD=<your_password>
+ROMPSLOMP_COMPANY_ID=<your Rompslomp company ID>
+ROMPSLOMP_API_KEY=<your_api_key>
+ROMPSLOMP_BASE_URL=https://api.rompslomp.nl/api/v1/companies
+ROMPSLOMP_CONTACTS_ENDPOINT=/contacts
+ROMPSLOMP_PRODUCTS_ENDPOINT=/products
+ROMPSLOMP_INVOICES_ENDPOINT=/sales_invoices
 ```
 
 Make sure that the `.env` file is in the root directory of your project so the script can load the environment variables correctly.
