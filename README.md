@@ -52,7 +52,7 @@ The script uses environment variables for configuration, which can be set in a `
 ```plaintext
 DOKAN_BASE_URL=https://example.com/wp-json/dokan/v1
 DOKAN_USERNAME=<your_username>
-DOKAN_PASSWORD=<your_password>
+DOKAN_PASSWORD=<your_application_password>
 ROMPSLOMP_COMPANY_ID=<your Rompslomp company ID>
 ROMPSLOMP_API_KEY=<your_api_key>
 ROMPSLOMP_BASE_URL=https://api.rompslomp.nl/api/v1/companies
