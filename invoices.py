@@ -117,16 +117,16 @@ class ConfigManager:
     def __init__(self):
         self.dokan_base_url = os.getenv("DOKAN_BASE_URL")
         self.dokan_auth = (os.getenv("DOKAN_USERNAME"), os.getenv("DOKAN_PASSWORD"))
-        self.rompslomp_company_id = os.getenv("ROMSLOMP_COMPANY_ID")
-        self.rompslomp_base_url = f"{os.getenv('ROMSLOMP_BASE_URL')}/{self.rompslomp_company_id}"
-        self.rompslomp_api_key = os.getenv("ROMSLOMP_API_KEY")
+        self.rompslomp_company_id = os.getenv("ROMPSLOMP_COMPANY_ID")
+        self.rompslomp_base_url = f"{os.getenv('ROMPSLOMP_BASE_URL')}/{self.rompslomp_company_id}"
+        self.rompslomp_api_key = os.getenv("ROMPSLOMP_API_KEY")
         self.rompslomp_headers = {
             "Authorization": f"Bearer {self.rompslomp_api_key}",
             "Content-Type": "application/json"
         }
-        self.rompslomp_contacts_url = f"{self.rompslomp_base_url}{os.getenv('ROMSLOMP_CONTACTS_ENDPOINT')}"
-        self.rompslomp_products_url = f"{self.rompslomp_base_url}{os.getenv('ROMSLOMP_PRODUCTS_ENDPOINT')}"
-        self.rompslomp_invoices_url = f"{self.rompslomp_base_url}{os.getenv('ROMSLOMP_INVOICES_ENDPOINT')}"
+        self.rompslomp_contacts_url = f"{self.rompslomp_base_url}{os.getenv('ROMPSLOMP_CONTACTS_ENDPOINT')}"
+        self.rompslomp_products_url = f"{self.rompslomp_base_url}{os.getenv('ROMPSLOMP_PRODUCTS_ENDPOINT')}"
+        self.rompslomp_invoices_url = f"{self.rompslomp_base_url}{os.getenv('ROMPSLOMP_INVOICES_ENDPOINT')}"
 
 # Data Loader for CSV Loading and Caching
 class DataLoader:
