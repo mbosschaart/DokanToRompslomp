@@ -50,7 +50,7 @@ pip install pandas requests python-dotenv tenacity diskcache
 The script uses environment variables for configuration, which can be set in a `.env` file. Below is an example of the required environment variables:
 
 ```plaintext
-DOKAN_BASE_URL=https://example.com/wp-json/dokan/v1
+DOKAN_BASE_URL=https://example.com/wp-json/dokan/v1/orders
 DOKAN_USERNAME=<your_username>
 DOKAN_PASSWORD=<your_application_password>
 ROMPSLOMP_COMPANY_ID=<your Rompslomp company ID>
