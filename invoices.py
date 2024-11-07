@@ -605,7 +605,8 @@ class InvoiceProcessor:
                 "description": order['id'],
                 "invoice_lines": lines,
                 "date": invoice_date,
-                "due_date": due_date
+                "due_date": due_date,
+                "sale_type": "supply",  # Added sale_type supply which is "Levering"
             }
 
             # Create the invoice in Rompslomp
