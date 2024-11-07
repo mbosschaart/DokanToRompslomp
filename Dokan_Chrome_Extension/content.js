@@ -24,7 +24,7 @@ function addOverlayButton() {
     // Create the button
     const button = document.createElement('button');
     button.id = 'process-orders-overlay-button';
-    button.textContent = 'Send Selected Orders to Rompslomp';
+    button.textContent = 'Invoice Selected orders';
     button.style.position = 'fixed';
     button.style.bottom = '20px';
     button.style.right = '20px';
@@ -39,6 +39,14 @@ function addOverlayButton() {
 
     // Add an event listener to handle the button click
     button.addEventListener('click', () => {
+        console.log('Overlay button clicked.');
+
+        // Disable the button and provide feedback
+        button.disabled = true;
+        button.textContent = "Sending... Please wait";
+        button.style.backgroundColor = "#ccc";
+        button.style.cursor = "not-allowed";
+
         const checkboxes = document.querySelectorAll('.cb-select-items:checked');
         let selectedOrders = [];
 
@@ -48,6 +56,7 @@ function addOverlayButton() {
 
         if (selectedOrders.length === 0) {
             alert('Please select at least one order.');
+            resetButton(button, "Invoice Selected orders");
             return;
         }
 
@@ -62,11 +71,21 @@ function addOverlayButton() {
             } else {
                 alert('Failed to send orders. Please try again.');
             }
+            // Re-enable the button and restore the text
+            resetButton(button, "Invoice Selected orders");
         });
     });
 
     // Append the button to the body of the page
     document.body.appendChild(button);
+}
+
+// Helper function to reset button states
+function resetButton(button, text) {
+    button.disabled = false;
+    button.textContent = text;
+    button.style.backgroundColor = "#007bff"; // Restore original background color
+    button.style.cursor = "pointer";
 }
 
 // Add the overlay button when the content script loads
