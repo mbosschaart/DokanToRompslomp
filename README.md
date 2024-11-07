@@ -60,6 +60,7 @@ ROMPSLOMP_CONTACTS_ENDPOINT=/contacts
 ROMPSLOMP_PRODUCTS_ENDPOINT=/products
 ROMPSLOMP_INVOICES_ENDPOINT=/sales_invoices
 ```
+To obtain your Rompslomp company id, please check this link: https://app.rompslomp.nl/developer/veelgestelde-vragen/company-id-opvragen
 
 Make sure that the `.env` file is in the root directory of your project so the script can load the environment variables correctly.
 
